@@ -21,6 +21,25 @@ const Auth = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    // Handle auth tokens in URL (from email confirmation)
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const accessToken = hashParams.get('access_token');
+    const refreshToken = hashParams.get('refresh_token');
+    
+    if (accessToken && refreshToken) {
+      supabase.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      }).then(({ error }) => {
+        if (!error) {
+          // Clear the hash from URL
+          window.history.replaceState(null, '', window.location.pathname);
+          navigate("/app");
+        }
+      });
+      return;
+    }
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
