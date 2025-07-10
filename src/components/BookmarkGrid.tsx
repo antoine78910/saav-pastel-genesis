@@ -13,18 +13,25 @@ export interface Bookmark {
   tags: string[];
   createdAt: Date;
   isBestMatch?: boolean;
+  notes?: string;
+  aiDescription?: string;
 }
 
 interface BookmarkGridProps {
   bookmarks: Bookmark[];
   onDelete: (id: string) => void;
+  onBookmarkClick: (bookmark: Bookmark) => void;
 }
 
-export const BookmarkGrid = ({ bookmarks, onDelete }: BookmarkGridProps) => {
+export const BookmarkGrid = ({ bookmarks, onDelete, onBookmarkClick }: BookmarkGridProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {bookmarks.map((bookmark) => (
-        <Card key={bookmark.id} className="group relative overflow-hidden hover:shadow-lg transition-all duration-300 bg-card border-border/50">
+        <Card 
+          key={bookmark.id} 
+          className="group relative overflow-hidden hover:shadow-lg transition-all duration-300 bg-card border-border/50 cursor-pointer"
+          onClick={() => onBookmarkClick(bookmark)}
+        >
           {bookmark.isBestMatch && (
             <Badge className="absolute top-2 right-2 z-10 bg-primary text-primary-foreground">
               Best Match
@@ -66,6 +73,7 @@ export const BookmarkGrid = ({ bookmarks, onDelete }: BookmarkGridProps) => {
                 size="sm"
                 asChild
                 className="text-primary hover:text-primary/80"
+                onClick={(e) => e.stopPropagation()}
               >
                 <a
                   href={bookmark.url}
@@ -81,7 +89,10 @@ export const BookmarkGrid = ({ bookmarks, onDelete }: BookmarkGridProps) => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onDelete(bookmark.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(bookmark.id);
+                }}
                 className="text-destructive hover:text-destructive/80 opacity-0 group-hover:opacity-100 transition-opacity"
               >
                 <Trash2 className="h-3 w-3" />

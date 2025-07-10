@@ -151,11 +151,29 @@ export const useBookmarks = () => {
     setSearchQuery(query);
   };
 
+  const updateBookmarkNotes = (id: string, notes: string) => {
+    const updatedBookmarks = bookmarks.map(bookmark => 
+      bookmark.id === id ? { ...bookmark, notes } : bookmark
+    );
+    setBookmarks(updatedBookmarks);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedBookmarks));
+  };
+
+  const updateBookmarkAiDescription = (id: string, aiDescription: string) => {
+    const updatedBookmarks = bookmarks.map(bookmark => 
+      bookmark.id === id ? { ...bookmark, aiDescription } : bookmark
+    );
+    setBookmarks(updatedBookmarks);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedBookmarks));
+  };
+
   return {
     bookmarks: filteredBookmarks,
     allBookmarks: bookmarks,
     addBookmark,
     deleteBookmark,
+    updateBookmarkNotes,
+    updateBookmarkAiDescription,
     searchBookmarks: searchBookmarksHandler,
     searchQuery,
     maxBookmarks: MAX_BOOKMARKS,
