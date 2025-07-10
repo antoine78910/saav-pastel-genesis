@@ -13,7 +13,7 @@ const Hero = () => {
           <img 
             src="/lovable-uploads/750dd3cd-b81d-436c-a3c8-9354275fb2f5.png" 
             alt="saave.io Logo" 
-            className="h-12 w-auto"
+            className="h-10 w-auto"
           />
         </div>
         <Button variant="outline" size="sm" onClick={() => window.location.href = '/auth'}>

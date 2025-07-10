@@ -2,18 +2,33 @@ import { SearchBar } from "@/components/SearchBar";
 import { BookmarkGrid } from "@/components/BookmarkGrid";
 import { AddBookmarkDialog } from "@/components/AddBookmarkDialog";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { UserAccountMenu } from "@/components/UserAccountMenu";
 import { useBookmarks } from "@/hooks/useBookmarks";
-import { Bookmark, LogOut } from "lucide-react";
+import { Bookmark, Menu, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const App = () => {
   const { bookmarks, allBookmarks, addBookmark, deleteBookmark, searchBookmarks, maxBookmarks } = useBookmarks();
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const [user, setUser] = useState<any>(null);
+  const [isDark, setIsDark] = useState(false);
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+  }, []);
+
+  const toggleTheme = () => {
+    setIsDark(!isDark);
+    document.documentElement.classList.toggle('dark');
   };
 
   const handleAddBookmark = async (bookmarkData: any) => {
@@ -39,21 +54,32 @@ const App = () => {
         <header className="border-b border-border/20 bg-background/80 backdrop-blur-sm sticky top-0 z-50">
           <div className="container mx-auto px-4 py-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 <img 
                   src="/lovable-uploads/750dd3cd-b81d-436c-a3c8-9354275fb2f5.png" 
                   alt="saave.io logo" 
-                  className="h-16 w-auto"
+                  className="h-10 w-auto"
                 />
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="text-sm text-muted-foreground">
-                  {allBookmarks.length}/{maxBookmarks} bookmarks
+                <div className="text-sm text-muted-foreground font-medium">
+                  {allBookmarks.length}/{maxBookmarks}
                 </div>
-                <AddBookmarkDialog onAdd={handleAddBookmark} />
-                <Button variant="ghost" size="sm" onClick={handleSignOut}>
-                  <LogOut className="h-4 w-4" />
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => navigate('/upgrade')}
+                  className="font-medium"
+                >
+                  Upgrade
                 </Button>
+              </div>
+              <div className="flex items-center gap-3">
+                <Button variant="ghost" size="sm">
+                  <Menu className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" size="sm" onClick={toggleTheme}>
+                  {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                </Button>
+                {user && <UserAccountMenu userEmail={user.email} />}
               </div>
             </div>
           </div>
