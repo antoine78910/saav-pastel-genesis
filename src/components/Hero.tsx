@@ -11,7 +11,7 @@ const Hero = () => {
       <header className="flex items-center justify-between px-6 py-4 border-b">
         <div className="flex items-center gap-2">
           <img 
-            src="/lovable-uploads/fd18d0f3-6f96-4574-90ab-3dbc5b3f960b.png" 
+            src="/lovable-uploads/750dd3cd-b81d-436c-a3c8-9354275fb2f5.png" 
             alt="saave.io Logo" 
             className="h-12 w-auto"
           />

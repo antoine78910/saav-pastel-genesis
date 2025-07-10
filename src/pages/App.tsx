@@ -15,14 +15,10 @@ const App = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img 
-                src="/lovable-uploads/fd18d0f3-6f96-4574-90ab-3dbc5b3f960b.png" 
+                src="/lovable-uploads/750dd3cd-b81d-436c-a3c8-9354275fb2f5.png" 
                 alt="saave.io logo" 
-                className="w-12 h-12 rounded-lg"
+                className="w-8 h-8 rounded-lg"
               />
-              <div>
-                <h1 className="text-2xl font-bold text-foreground">saave.io</h1>
-                <p className="text-sm text-muted-foreground">Save everything. Find anything.</p>
-              </div>
             </div>
             <AddBookmarkDialog onAdd={addBookmark} />
           </div>
