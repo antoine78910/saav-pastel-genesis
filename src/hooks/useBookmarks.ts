@@ -74,6 +74,7 @@ export const useBookmarks = () => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredBookmarks, setFilteredBookmarks] = useState<Bookmark[]>([]);
+  const MAX_BOOKMARKS = 20;
 
   // Load bookmarks from localStorage on mount
   useEffect(() => {
@@ -124,6 +125,10 @@ export const useBookmarks = () => {
     description: string;
     tags: string[];
   }) => {
+    if (bookmarks.length >= MAX_BOOKMARKS) {
+      throw new Error(`You can only save up to ${MAX_BOOKMARKS} bookmarks`);
+    }
+
     const newBookmark: Bookmark = {
       id: crypto.randomUUID(),
       ...bookmarkData,
@@ -148,9 +153,11 @@ export const useBookmarks = () => {
 
   return {
     bookmarks: filteredBookmarks,
+    allBookmarks: bookmarks,
     addBookmark,
     deleteBookmark,
     searchBookmarks: searchBookmarksHandler,
     searchQuery,
+    maxBookmarks: MAX_BOOKMARKS,
   };
 };
