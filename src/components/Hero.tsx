@@ -16,7 +16,7 @@ const Hero = () => {
             className="h-12 w-auto"
           />
         </div>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" onClick={() => window.location.href = '/auth'}>
           Sign In
         </Button>
       </header>
@@ -102,7 +102,7 @@ const Hero = () => {
               </div>
             </div>
 
-            <Button size="lg" className="w-full lg:w-auto" onClick={() => window.location.href = '/app'}>
+            <Button size="lg" className="w-full lg:w-auto" onClick={() => window.location.href = '/auth'}>
               Get started
             </Button>
           </div>
