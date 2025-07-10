@@ -5,9 +5,9 @@ const Footer = () => {
     <footer className="py-12 bg-muted/30 border-t">
       <div className="container mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
-          <div className="flex items-center gap-2">
-            <MapPin className="w-6 h-6 text-primary" />
-            <span className="text-lg font-semibold">saav.io</span>
+          <div className="text-center md:text-left">
+            <h3 className="text-lg font-semibold mb-1">Saave.io</h3>
+            <p className="text-sm text-muted-foreground">Never lose a link again. Save, search and organize your bookmarks with AI.</p>
           </div>
           
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
@@ -23,7 +23,7 @@ const Footer = () => {
           </div>
           
           <div className="text-sm text-muted-foreground">
-            © 2024 Saav.io. All rights reserved.
+            © 2025 Saave.io. All rights reserved.
           </div>
         </div>
       </div>

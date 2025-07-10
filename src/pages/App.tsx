@@ -17,7 +17,7 @@ const App = () => {
               <img 
                 src="/lovable-uploads/750dd3cd-b81d-436c-a3c8-9354275fb2f5.png" 
                 alt="saave.io logo" 
-                className="w-8 h-8 rounded-lg"
+                className="h-12 w-auto"
               />
             </div>
             <AddBookmarkDialog onAdd={addBookmark} />
