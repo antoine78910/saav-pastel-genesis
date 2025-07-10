@@ -13,7 +13,7 @@ const Hero = () => {
           <img 
             src="/lovable-uploads/fd18d0f3-6f96-4574-90ab-3dbc5b3f960b.png" 
             alt="saave.io Logo" 
-            className="h-8 w-auto"
+            className="h-12 w-auto"
           />
         </div>
         <Button variant="outline" size="sm">
@@ -102,7 +102,7 @@ const Hero = () => {
               </div>
             </div>
 
-            <Button size="lg" className="w-full lg:w-auto">
+            <Button size="lg" className="w-full lg:w-auto" onClick={() => window.location.href = '/app'}>
               Get started
             </Button>
           </div>

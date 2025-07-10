@@ -15,9 +15,9 @@ const App = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img 
-                src="/lovable-uploads/d6829d6a-6e48-435a-aac0-ec58d93043ba.png" 
+                src="/lovable-uploads/fd18d0f3-6f96-4574-90ab-3dbc5b3f960b.png" 
                 alt="saave.io logo" 
-                className="w-10 h-10 rounded-lg"
+                className="w-12 h-12 rounded-lg"
               />
               <div>
                 <h1 className="text-2xl font-bold text-foreground">saave.io</h1>
