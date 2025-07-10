@@ -3,9 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Check, ArrowLeft, Zap, Bot, Tag, Search, Image } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const Upgrade = () => {
   const navigate = useNavigate();
+  const [isYearly, setIsYearly] = useState(true); // Préselectionner l'abonnement annuel
 
   const features = [
     {
@@ -35,24 +37,26 @@ const Upgrade = () => {
     },
   ];
 
-  const pricingPlans = [
-    {
-      name: "Monthly",
+  const currentPlan = {
+    monthly: {
       price: "$9",
       period: "month",
+      yearlyPrice: "$108",
       description: "Perfect for getting started",
-      popular: false,
+      savings: undefined,
     },
-    {
-      name: "Yearly",
+    yearly: {
       price: "$5",
       period: "month",
+      yearlyPrice: "$60",
+      originalPrice: "$108",
+      savings: "$48",
       description: "Best value for power users",
-      popular: true,
       discount: "-45%",
-      originalPrice: "$9",
-    },
-  ];
+    }
+  };
+
+  const plan = isYearly ? currentPlan.yearly : currentPlan.monthly;
 
   return (
     <div className="min-h-screen bg-background">
@@ -121,96 +125,122 @@ const Upgrade = () => {
               </p>
             </div>
 
-            <div className="space-y-4">
-              {pricingPlans.map((plan, index) => (
-                <Card 
-                  key={index} 
-                  className={`relative overflow-hidden transition-all duration-300 hover:shadow-lg ${
-                    plan.popular 
-                      ? 'border-primary shadow-md ring-2 ring-primary/20' 
-                      : 'border-border hover:border-primary/30'
+            {/* Billing Toggle */}
+            <div className="flex justify-center mb-8">
+              <div className="flex items-center bg-muted rounded-lg p-1">
+                <button
+                  onClick={() => setIsYearly(false)}
+                  className={`px-6 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                    !isYearly 
+                      ? 'bg-background text-foreground shadow-sm' 
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
-                  {plan.popular && (
-                    <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-3 py-1 text-sm font-medium">
-                      Most Popular
+                  Monthly
+                </button>
+                <button
+                  onClick={() => setIsYearly(true)}
+                  className={`px-6 py-2 rounded-md text-sm font-medium transition-all duration-200 relative ${
+                    isYearly 
+                      ? 'bg-background text-foreground shadow-sm' 
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  Yearly
+                  {isYearly && (
+                    <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 animate-pulse">
+                      -45%
+                    </Badge>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Single Pricing Card */}
+            <Card className="relative overflow-hidden border-primary shadow-md ring-2 ring-primary/20 transition-all duration-300">
+              <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-3 py-1 text-sm font-medium">
+                {isYearly ? 'Best Value' : 'Popular'}
+              </div>
+              
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-xl font-bold">
+                      Saave.pro {isYearly ? 'Yearly' : 'Monthly'}
+                    </CardTitle>
+                    <CardDescription className="mt-1">
+                      {plan.description}
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              
+              <CardContent className="space-y-6">
+                <div className="text-center">
+                  <div className="flex items-baseline justify-center gap-2 mb-2">
+                    <span className="text-4xl font-bold text-foreground">
+                      {plan.price}
+                    </span>
+                    <span className="text-muted-foreground">
+                      /{plan.period}
+                    </span>
+                  </div>
+                  
+                  {isYearly && (
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground">
+                        Billed annually: <span className="font-semibold">{plan.yearlyPrice}</span>
+                      </p>
+                      {plan.savings && (
+                        <p className="text-sm text-green-600 font-medium">
+                          Save {plan.savings} compared to monthly billing
+                        </p>
+                      )}
                     </div>
                   )}
                   
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <CardTitle className="text-xl font-bold">
-                          Saave.pro {plan.name}
-                        </CardTitle>
-                        <CardDescription className="mt-1">
-                          {plan.description}
-                        </CardDescription>
-                      </div>
-                      {plan.discount && (
-                        <Badge variant="destructive" className="bg-red-500 text-white">
-                          {plan.discount}
-                        </Badge>
-                      )}
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-6">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-4xl font-bold text-foreground">
-                        {plan.price}
-                      </span>
-                      <span className="text-muted-foreground">
-                        /{plan.period}
-                      </span>
-                      {plan.originalPrice && (
-                        <span className="text-sm text-muted-foreground line-through ml-2">
-                          {plan.originalPrice}/{plan.period}
-                        </span>
-                      )}
-                    </div>
+                  {!isYearly && (
+                    <p className="text-sm text-muted-foreground">
+                      Billed monthly: <span className="font-semibold">{plan.yearlyPrice}</span>
+                    </p>
+                  )}
+                </div>
 
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <Check className="h-5 w-5 text-primary" />
-                        <span className="text-foreground">Unlimited bookmarks</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Check className="h-5 w-5 text-primary" />
-                        <span className="text-foreground">AI-powered summaries</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Check className="h-5 w-5 text-primary" />
-                        <span className="text-foreground">Advanced search</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Check className="h-5 w-5 text-primary" />
-                        <span className="text-foreground">Visual previews</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Check className="h-5 w-5 text-primary" />
-                        <span className="text-foreground">Auto-tagging</span>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <Check className="h-5 w-5 text-primary" />
-                        <span className="text-foreground">Priority support</span>
-                      </div>
-                    </div>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-primary" />
+                    <span className="text-foreground">Unlimited bookmarks</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-primary" />
+                    <span className="text-foreground">AI-powered summaries</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-primary" />
+                    <span className="text-foreground">Advanced search</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-primary" />
+                    <span className="text-foreground">Visual previews</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-primary" />
+                    <span className="text-foreground">Auto-tagging</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Check className="h-5 w-5 text-primary" />
+                    <span className="text-foreground">Priority support</span>
+                  </div>
+                </div>
 
-                    <Button 
-                      className={`w-full font-semibold py-3 ${
-                        plan.popular 
-                          ? 'bg-primary hover:bg-primary/90 text-primary-foreground' 
-                          : 'bg-secondary hover:bg-secondary/90 text-secondary-foreground'
-                      }`}
-                      size="lg"
-                    >
-                      {plan.popular ? 'Choose Yearly' : 'Choose Monthly'}
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                <Button 
+                  className="w-full font-semibold py-3 bg-primary hover:bg-primary/90 text-primary-foreground"
+                  size="lg"
+                >
+                  {isYearly ? 'Start Yearly Plan' : 'Start Monthly Plan'}
+                </Button>
+              </CardContent>
+            </Card>
 
             <div className="text-center text-sm text-muted-foreground mt-6">
               <p>✨ 7-day free trial • Cancel anytime • No hidden fees</p>
