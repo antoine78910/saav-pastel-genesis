@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,7 +8,7 @@ import { useState } from "react";
 
 const Upgrade = () => {
   const navigate = useNavigate();
-  const [isYearly, setIsYearly] = useState(true); // Préselectionner l'abonnement annuel
+  const [isYearly, setIsYearly] = useState(true);
 
   const features = [
     {
@@ -186,23 +187,12 @@ const Upgrade = () => {
                     </span>
                   </div>
                   
-                  {isYearly && (
+                  {isYearly && plan.savings && (
                     <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground">
-                        Billed annually: <span className="font-semibold">{plan.yearlyPrice}</span>
+                      <p className="text-sm text-green-600 font-medium">
+                        Save {plan.savings} compared to monthly billing
                       </p>
-                      {plan.savings && (
-                        <p className="text-sm text-green-600 font-medium">
-                          Save {plan.savings} compared to monthly billing
-                        </p>
-                      )}
                     </div>
-                  )}
-                  
-                  {!isYearly && (
-                    <p className="text-sm text-muted-foreground">
-                      Billed monthly: <span className="font-semibold">{plan.yearlyPrice}</span>
-                    </p>
                   )}
                 </div>
 
@@ -241,10 +231,6 @@ const Upgrade = () => {
                 </Button>
               </CardContent>
             </Card>
-
-            <div className="text-center text-sm text-muted-foreground mt-6">
-              <p>✨ 7-day free trial • Cancel anytime • No hidden fees</p>
-            </div>
           </div>
         </div>
 

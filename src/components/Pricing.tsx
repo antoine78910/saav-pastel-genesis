@@ -1,8 +1,40 @@
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Check } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 const Pricing = () => {
+  const navigate = useNavigate();
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    getUser();
+  }, []);
+
+  const handleGetStarted = () => {
+    if (user) {
+      navigate('/app');
+    } else {
+      navigate('/auth');
+    }
+  };
+
+  const handleStartTrial = () => {
+    if (user) {
+      navigate('/upgrade');
+    } else {
+      sessionStorage.setItem('redirectAfterAuth', '/upgrade');
+      navigate('/auth');
+    }
+  };
+
   const plans = [
     {
       name: "Free",
@@ -15,7 +47,8 @@ const Pricing = () => {
         "Chrome extension"
       ],
       cta: "Get started for free",
-      popular: false
+      popular: false,
+      action: handleGetStarted
     },
     {
       name: "Pro",
@@ -30,7 +63,8 @@ const Pricing = () => {
         "Priority support"
       ],
       cta: "Start free trial",
-      popular: true
+      popular: true,
+      action: handleStartTrial
     }
   ];
 
@@ -90,6 +124,7 @@ const Pricing = () => {
                   className="w-full" 
                   variant={plan.popular ? "default" : "outline"}
                   size="lg"
+                  onClick={plan.action}
                 >
                   {plan.cta}
                 </Button>

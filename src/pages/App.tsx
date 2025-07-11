@@ -34,9 +34,43 @@ const App = () => {
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+
+      // Handle pending bookmarks from session storage
+      if (user) {
+        const pendingBookmark = sessionStorage.getItem('pendingBookmark');
+        const newBookmark = sessionStorage.getItem('newBookmark');
+        
+        if (pendingBookmark) {
+          try {
+            const bookmarkData = JSON.parse(pendingBookmark);
+            addBookmark(bookmarkData);
+            sessionStorage.removeItem('pendingBookmark');
+            toast({
+              title: "Bookmark saved!",
+              description: "Your bookmark has been added successfully.",
+            });
+          } catch (error) {
+            console.error('Error adding pending bookmark:', error);
+          }
+        }
+        
+        if (newBookmark) {
+          try {
+            const bookmarkData = JSON.parse(newBookmark);
+            addBookmark(bookmarkData);
+            sessionStorage.removeItem('newBookmark');
+            toast({
+              title: "Bookmark saved!",
+              description: "Your bookmark has been added successfully.",
+            });
+          } catch (error) {
+            console.error('Error adding new bookmark:', error);
+          }
+        }
+      }
     };
     getUser();
-  }, []);
+  }, [addBookmark, toast]);
 
   const toggleTheme = () => {
     setIsDark(!isDark);

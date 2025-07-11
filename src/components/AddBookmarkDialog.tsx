@@ -1,22 +1,26 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Plus, Globe } from "lucide-react";
+import { Plus, Globe, Save } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 interface AddBookmarkDialogProps {
-  onAdd: (bookmark: {
+  onAdd?: (bookmark: {
     url: string;
     title: string;
     description: string;
     tags: string[];
   }) => void;
+  showTrigger?: boolean;
 }
 
-export const AddBookmarkDialog = ({ onAdd }: AddBookmarkDialogProps) => {
+export const AddBookmarkDialog = ({ onAdd, showTrigger = true }: AddBookmarkDialogProps) => {
   const [open, setOpen] = useState(false);
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
@@ -24,8 +28,9 @@ export const AddBookmarkDialog = ({ onAdd }: AddBookmarkDialogProps) => {
   const [tags, setTags] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!url.trim()) {
@@ -40,9 +45,36 @@ export const AddBookmarkDialog = ({ onAdd }: AddBookmarkDialogProps) => {
     setIsLoading(true);
     
     try {
+      // Check if user is authenticated
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        // Store bookmark data in session storage for later use
+        sessionStorage.setItem('pendingBookmark', JSON.stringify({
+          url: url.trim(),
+          title: title || ((() => {
+            try {
+              const domain = new URL(url).hostname;
+              return domain.replace('www.', '');
+            } catch {
+              return url;
+            }
+          })()),
+          description,
+          tags: tags.split(',').map(tag => tag.trim()).filter(Boolean),
+        }));
+        
+        toast({
+          title: "Authentication required",
+          description: "Please sign in to save your bookmark",
+        });
+        
+        navigate('/auth');
+        return;
+      }
+
       // Auto-fetch title if not provided
       let finalTitle = title;
-      let finalDescription = description;
       
       if (!title.trim()) {
         try {
@@ -53,12 +85,22 @@ export const AddBookmarkDialog = ({ onAdd }: AddBookmarkDialogProps) => {
         }
       }
 
-      onAdd({
+      const bookmarkData = {
         url: url.trim(),
         title: finalTitle || "Untitled",
-        description: finalDescription,
+        description,
         tags: tags.split(',').map(tag => tag.trim()).filter(Boolean),
-      });
+      };
+
+      // If onAdd is provided (from /app), use it, otherwise navigate to /app
+      if (onAdd) {
+        onAdd(bookmarkData);
+      } else {
+        // Store bookmark data and navigate to app
+        sessionStorage.setItem('newBookmark', JSON.stringify(bookmarkData));
+        navigate('/app');
+        return;
+      }
 
       // Reset form
       setUrl("");
@@ -84,12 +126,14 @@ export const AddBookmarkDialog = ({ onAdd }: AddBookmarkDialogProps) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
-          <Plus className="h-4 w-4" />
-          Add Bookmark
-        </Button>
-      </DialogTrigger>
+      {showTrigger && (
+        <DialogTrigger asChild>
+          <Button className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
+            <Plus className="h-4 w-4" />
+            Add Bookmark
+          </Button>
+        </DialogTrigger>
+      )}
       
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -99,7 +143,7 @@ export const AddBookmarkDialog = ({ onAdd }: AddBookmarkDialogProps) => {
           </DialogTitle>
         </DialogHeader>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSave} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="url">URL *</Label>
             <Input
@@ -144,7 +188,8 @@ export const AddBookmarkDialog = ({ onAdd }: AddBookmarkDialogProps) => {
           </div>
           
           <div className="flex gap-2 pt-2">
-            <Button type="submit" disabled={isLoading} className="flex-1">
+            <Button type="submit" disabled={isLoading} className="flex-1 gap-2">
+              <Save className="h-4 w-4" />
               {isLoading ? "Saving..." : "Save Bookmark"}
             </Button>
             <Button

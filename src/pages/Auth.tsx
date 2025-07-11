@@ -34,7 +34,14 @@ const Auth = () => {
         if (!error) {
           // Clear the hash from URL
           window.history.replaceState(null, '', window.location.pathname);
-          navigate("/app");
+          // Check for redirect after auth
+          const redirectAfterAuth = sessionStorage.getItem('redirectAfterAuth');
+          if (redirectAfterAuth) {
+            sessionStorage.removeItem('redirectAfterAuth');
+            navigate(redirectAfterAuth);
+          } else {
+            navigate("/app");
+          }
         }
       });
       return;
@@ -46,7 +53,14 @@ const Auth = () => {
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
-          navigate("/app");
+          // Check for redirect after auth
+          const redirectAfterAuth = sessionStorage.getItem('redirectAfterAuth');
+          if (redirectAfterAuth) {
+            sessionStorage.removeItem('redirectAfterAuth');
+            navigate(redirectAfterAuth);
+          } else {
+            navigate("/app");
+          }
         }
       }
     );
@@ -56,7 +70,14 @@ const Auth = () => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        navigate("/app");
+        // Check for redirect after auth
+        const redirectAfterAuth = sessionStorage.getItem('redirectAfterAuth');
+        if (redirectAfterAuth) {
+          sessionStorage.removeItem('redirectAfterAuth');
+          navigate(redirectAfterAuth);
+        } else {
+          navigate("/app");
+        }
       }
     });
 
