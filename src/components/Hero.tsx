@@ -3,8 +3,28 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { MapPin, Zap, Bot, Tag, Search, Image } from "lucide-react";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Hero = () => {
+  const [url, setUrl] = useState("");
+
+  const handleSaveLink = async () => {
+    if (!url.trim()) return;
+    
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      // Store URL in sessionStorage and redirect to auth
+      sessionStorage.setItem('pendingBookmarkUrl', url);
+      window.location.href = '/auth';
+    } else {
+      // User is logged in, redirect to app with URL
+      sessionStorage.setItem('pendingBookmarkUrl', url);
+      window.location.href = '/app';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -134,10 +154,20 @@ const Hero = () => {
                   </div>
                 </div>
                 
-                <Input 
-                  placeholder="https://example.com" 
-                  className="mt-4"
-                />
+                <div className="space-y-3 mt-4">
+                  <Input 
+                    placeholder="https://example.com" 
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                  />
+                  <Button 
+                    onClick={handleSaveLink}
+                    className="w-full"
+                    disabled={!url.trim()}
+                  >
+                    Save this link
+                  </Button>
+                </div>
               </div>
             </Card>
             
